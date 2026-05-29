@@ -3,34 +3,34 @@
   "sites": [
     {
       "key": "尤酷",
-      "name": "[839ms|0KB/s] 尤酷",
+      "name": "[652ms|0KB/s] 尤酷",
       "type": 1,
-      "api": "https://api.ukuapi.com/api.php/provide/vod/?ac=list",
+      "api": "https://api.ukuapi.com/api.php/provide/vod",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 0
     },
     {
       "key": "极速",
-      "name": "[1011ms|0KB/s] 极速",
+      "name": "[777ms|0KB/s] 极速",
       "type": 1,
-      "api": "https://jszyapi.com/api.php/provide/vod/?ac=list",
+      "api": "https://jszyapi.com/api.php/provide/vod",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 0
     },
     {
       "key": "率率",
-      "name": "[1027ms|0KB/s] 率率",
+      "name": "[934ms|0KB/s] 率率",
       "type": 1,
-      "api": "https://suoniapi.com/api.php/provide/vod/?ac=list",
+      "api": "https://suoniapi.com/api.php/provide/vod",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 0
     },
     {
       "key": "索尼┃采集",
-      "name": "[2112ms|0KB/s] 索尼┃采集",
+      "name": "[1071ms|0KB/s] 索尼┃采集",
       "type": 1,
       "api": "https://suoniapi.com/api.php/provide/vod",
       "searchable": 1,
