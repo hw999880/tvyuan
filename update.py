@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
-"""
-TVBox 聚合源自动更新脚本
-- 从 tvbox.clbug.com 获取所有源
-- 测速（源URL延迟 + 采集站实际播放速度）
-- 按播放速度排序：首帧快、不卡顿的排前面
-"""
+"""TVBox 聚合源 - 全流程播放测速，按持续速度排序"""
 import json, sys, re, subprocess, os, time
+from urllib.parse import urljoin, urlparse
 
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_FILE = os.path.join(WORK_DIR, "tvbox.json")
@@ -23,200 +19,164 @@ def build_url(base, params):
     sep = "&" if "?" in base else "?"
     return base.rstrip("/") + sep + params
 
+def extract_m3u8(text):
+    return re.findall(r'(https?://[^\s"\'<>#\$]+?\.m3u8)', text)
+
+def resolve_url(base, path):
+    if path.startswith("http"): return path
+    if path.startswith("/"): return f"{urlparse(base).scheme}://{urlparse(base).netloc}{path}"
+    return urljoin(base, path)
+
+def get_segments(media, media_url):
+    urls = []
+    lines = media.strip().split("\n")
+    for i, line in enumerate(lines):
+        if line.startswith("#EXTINF") and i+1 < len(lines):
+            nxt = lines[i+1].strip()
+            if nxt and not nxt.startswith("#"):
+                urls.append(resolve_url(media_url, nxt))
+    return urls
+
+def test_play(api, stype):
+    base = re.sub(r'[?&]ac=list.*', '', api.rstrip("/"))
+    body = fetch(build_url(base, "ac=list"), timeout=10)
+    if not body or len(body) < 50: return 0, 0, 0, "列表失败"
+    vod_id = None
+    if stype == 0:
+        m = re.findall(r'<id>(\d+)</id>', body)
+        vod_id = m[0] if m else None
+    else:
+        try:
+            j = json.loads(body, strict=False)
+            vod_id = str(j["list"][0]["vod_id"]) if j.get("list") else None
+        except: return 0, 0, 0, "解析失败"
+    if not vod_id: return 0, 0, 0, "无ID"
+    detail = fetch(build_url(base, f"ac=detail&ids={vod_id}"), timeout=10)
+    play_url = None
+    if stype == 0:
+        urls = extract_m3u8(detail)
+        play_url = urls[0] if urls else None
+    else:
+        try:
+            dj = json.loads(detail, strict=False)
+            vl = dj.get("list", [])
+            if vl: play_url = extract_m3u8(vl[0].get("vod_play_url", ""))[0]
+        except: return 0, 0, 0, "详情失败"
+    if not play_url: return 0, 0, 0, "无播放URL"
+    t0 = time.time()
+    master = fetch(play_url, timeout=10)
+    ttfb = int((time.time() - t0) * 1000)
+    if not master: return ttfb, 0, 0, "主列表空"
+    media_url = None
+    if "#EXT-X-STREAM-INF" in master:
+        lines = master.strip().split("\n")
+        for i, line in enumerate(lines):
+            if "STREAM-INF" in line and i+1 < len(lines):
+                sub = lines[i+1].strip()
+                if sub and not sub.startswith("#"):
+                    media_url = resolve_url(play_url, sub); break
+    elif "#EXTINF" in master: media_url = play_url
+    if not media_url: return ttfb, 0, 0, "无媒体列表"
+    t1 = time.time()
+    media = fetch(media_url, timeout=10)
+    media_ms = int((time.time() - t1) * 1000)
+    if "#EXTINF" not in media: return ttfb+media_ms, 0, 0, "无分片信息"
+    segs = get_segments(media, media_url)
+    if not segs: return ttfb+media_ms, 0, 0, "无分片"
+    total_b, total_t, ok = 0, 0, 0
+    for s in segs[:3]:
+        r = subprocess.run(["curl","-s","-o","/dev/null","-w","%{http_code},%{size_download},%{time_total}",
+                           "--connect-timeout","5","--max-time","15",s], capture_output=True, timeout=20)
+        parts = r.stdout.decode().strip().split(",")
+        code = parts[0] if parts else "000"
+        size = int(float(parts[1])) if len(parts)>1 and parts[1] else 0
+        dl = float(parts[2]) if len(parts)>2 and parts[2] else 99
+        if code.startswith("2") and size > 1000: total_b += size; total_t += dl; ok += 1
+    if ok == 0: return ttfb+media_ms, 0, 0, "分片下载失败"
+    speed = int((total_b/1024)/total_t) if total_t > 0 else 0
+    return ttfb+media_ms, speed, ok, "OK"
+
 def fetch_source_list():
     html = fetch("https://tvbox.clbug.com/user.php", timeout=20)
     urls = re.findall(r'data-url="([^"]+)"', html)
     names = re.findall(r'<td class="td-name">([^<]+)</td>', html)
-    return [(n.strip(), u.strip().replace("&amp;", "&")) for n, u in zip(names, urls) if u.strip() and not u.strip().startswith("#")]
-
-def test_url_latency(url, timeout=8):
-    try:
-        start = time.time()
-        r = subprocess.run(["curl", "-s", "-o", "/dev/null", "-w", "%{http_code}",
-                           "--connect-timeout", str(timeout), "--max-time", str(timeout*2),
-                           "-L", "-A", "Mozilla/5.0", url],
-                          capture_output=True, timeout=timeout*2+5)
-        code = r.stdout.decode().strip()
-        elapsed = int((time.time() - start) * 1000)
-        return elapsed if code.startswith(("2", "3")) else 99999
-    except:
-        return 99999
-
-def test_play_speed(api, stype):
-    """返回 (首帧ms, 下载速度KB/s, HTTP码)"""
-    base_api = re.sub(r'[?&]ac=list.*', '', api.rstrip("/"))
-    list_body = fetch(build_url(base_api, "ac=list"), timeout=10)
-    if not list_body or len(list_body) < 50:
-        return 99999, 0, "list_fail"
-    
-    vod_id = None
-    if stype == 0:
-        m = re.findall(r'<id>(\d+)</id>', list_body)
-        vod_id = m[0] if m else None
-    else:
-        try:
-            j = json.loads(list_body, strict=False)
-            vl = j.get("list", [])
-            vod_id = str(vl[0]["vod_id"]) if vl else None
-        except:
-            return 99999, 0, "parse_fail"
-    
-    if not vod_id:
-        return 99999, 0, "no_id"
-    
-    detail_body = fetch(build_url(base_api, f"ac=detail&ids={vod_id}"), timeout=10)
-    if not detail_body:
-        return 99999, 0, "detail_fail"
-    
-    play_url = None
-    if stype == 0:
-        urls = re.findall(r'(https?://[^\s<>]+?\.m3u8[^\s<>]*)', detail_body)
-        play_url = urls[0] if urls else None
-    else:
-        try:
-            dj = json.loads(detail_body, strict=False)
-            vl = dj.get("list", [])
-            if vl:
-                play_raw = vl[0].get("vod_play_url", "")
-                urls = re.findall(r'(https?://[^\$\s#<>]+?\.m3u8[^\$\s#<>]*)', play_raw)
-                if not urls:
-                    urls = re.findall(r'(https?://[^\$\s#<>]+?\.mp4[^\$\s#<>]*)', play_raw)
-                play_url = urls[0] if urls else None
-        except:
-            return 99999, 0, "parse_fail"
-    
-    if not play_url:
-        return 99999, 0, "no_url"
-    
-    t0 = time.time()
-    r = subprocess.run(["curl", "-s", "-o", "/dev/null",
-                       "-w", "%{http_code},%{time_starttransfer},%{speed_download}",
-                       "--connect-timeout", "5", "--max-time", "10",
-                       "-r", "0-512000", play_url],
-                      capture_output=True, timeout=15)
-    info = r.stdout.decode().strip().split(",")
-    code = info[0] if info else "000"
-    ttfb = float(info[1]) if len(info) > 1 and info[1] else 99.0
-    speed = float(info[2]) if len(info) > 2 and info[2] else 0
-    
-    if not code.startswith("2"):
-        return 99999, 0, code
-    return int(ttfb * 1000), int(speed / 1024), code
+    return [(n.strip(), u.strip().replace("&amp;","&")) for n,u in zip(names,urls) if u.strip() and not u.strip().startswith("#")]
 
 def fetch_and_parse(url):
     raw = fetch(url, timeout=15)
-    if not raw.strip() or raw.strip().startswith("<"):
-        return None
-    raw = raw.lstrip('﻿')
-    raw = re.sub(r',(\s*[}\]])', r'\1', raw)
-    try:
-        return json.loads(raw, strict=False)
+    if not raw.strip() or raw.strip().startswith("<"): return None
+    raw = raw.lstrip('﻿'); raw = re.sub(r',(\s*[}\]])', r'\1', raw)
+    try: return json.loads(raw, strict=False)
     except:
-        start = raw.find('{')
-        end = raw.rfind('}')
-        if start >= 0 and end > start:
-            try:
-                return json.loads(raw[start:end+1], strict=False)
-            except:
-                pass
+        s,e = raw.find('{'), raw.rfind('}')
+        if s>=0 and e>s:
+            try: return json.loads(raw[s:e+1], strict=False)
+            except: pass
     return None
 
 def main():
     print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 开始更新...")
-
-    # 1. 获取源列表
     sources = fetch_source_list()
     print(f"  获取到 {len(sources)} 个源")
-
-    # 2. 测URL延迟 + 抓取源配置
-    source_configs = []
+    
+    configs = []
     for name, url in sources:
-        latency = test_url_latency(url)
-        if latency >= 99999:
-            continue
+        try:
+            start = time.time()
+            r = subprocess.run(["curl","-s","-o","/dev/null","-w","%{http_code}","--connect-timeout","8","--max-time","15","-L","-A","Mozilla/5.0",url], capture_output=True, timeout=20)
+            code = r.stdout.decode().strip()
+            lat = int((time.time()-start)*1000) if code.startswith(("2","3")) else 99999
+        except: lat = 99999
+        if lat >= 99999: continue
         data = fetch_and_parse(url)
-        if data:
-            source_configs.append((name, url, latency, data))
-        sys.stdout.write(f"\r  测试: {len(source_configs)}/{len(sources)}")
-        sys.stdout.flush()
+        if data: configs.append((name, url, lat, data))
+        sys.stdout.write(f"\r  测试: {len(configs)}/{len(sources)}"); sys.stdout.flush()
     print()
-    source_configs.sort(key=lambda x: x[2])
-    print(f"  可用源: {len(source_configs)}/{len(sources)}")
-
-    # 3. 收集 type=0/1 采集站 + 测播放速度
-    collect_apis = {}  # api -> (name, stype)
-    all_lives = []
-    all_parses = []
-    live_keys = set()
-    parse_keys = set()
     
-    for name, url, latency, data in source_configs:
+    # 收集采集站
+    apis = {}
+    all_lives, all_parses = [], []
+    live_keys, parse_keys = set(), set()
+    for name, url, lat, data in configs:
         for s in (data.get("sites") or []):
-            stype = s.get("type", -1)
-            api = s.get("api", "")
-            if stype in (0, 1) and api.startswith("http") and api not in collect_apis:
-                collect_apis[api] = (s.get("name", ""), stype)
-        
+            st = s.get("type",-1); api = s.get("api","")
+            if st in (0,1) and api.startswith("http") and api not in apis:
+                apis[api] = (s.get("name",""), st)
         for l in (data.get("lives") or []):
-            lurl = l.get("url", "")
-            if lurl and lurl not in live_keys:
-                live_keys.add(lurl)
-                l["name"] = f"[{name}] {l.get('name', '直播')}"
-                all_lives.append(l)
-        
+            u = l.get("url","")
+            if u and u not in live_keys: live_keys.add(u); all_lives.append(l)
         for p in (data.get("parses") or []):
-            purl = p.get("url", "")
-            if purl and purl not in parse_keys:
-                parse_keys.add(purl)
-                p["name"] = f"[{name}] {p.get('name', '解析')}"
-                all_parses.append(p)
-
-    print(f"  发现 {len(collect_apis)} 个采集站，开始测播放速度...")
+            u = p.get("url","")
+            if u and u not in parse_keys: parse_keys.add(u); all_parses.append(p)
     
-    # 4. 测播放速度
-    play_results = []
-    for api, (orig_name, stype) in collect_apis.items():
-        ttfb, speed, code = test_play_speed(api, stype)
-        play_results.append((ttfb, speed, code, orig_name, api, stype))
-        status = "ok" if code.startswith("2") else "fail"
-        sys.stdout.write(f"\r  测速: {len(play_results)}/{len(collect_apis)} [{status}]")
-        sys.stdout.flush()
+    print(f"  采集站: {len(apis)} 个，开始播放测速...")
+    results = []
+    for api, (name, st) in apis.items():
+        ttfb, speed, segs, status = test_play(api, st)
+        ok = status == "OK"
+        results.append((ok, ttfb, speed, segs, name, api, st, status))
+        mark = "ok" if ok else "fail"
+        sys.stdout.write(f"\r  测速: {len(results)}/{len(apis)} [{mark}]"); sys.stdout.flush()
     print()
-
-    # 5. 排序：可用 → 首帧快 → 速度快
-    ok = sorted([(t,s,c,n,a,st) for t,s,c,n,a,st in play_results if c.startswith("2")], key=lambda x:(x[0],-x[1]))
-    print(f"  可用采集站: {len(ok)}/{len(collect_apis)}")
     
-    for ttfb, speed, code, name, api, stype in ok:
-        print(f"    ✅ {ttfb:>5}ms  {speed:>5}KB/s  {name}")
-
-    # 6. 构建JSON
+    ok_list = sorted([(a,b,c,d,e,f,g,h) for a,b,c,d,e,f,g,h in results if a], key=lambda x:(-x[2],x[1]))
+    for _, ttfb, speed, segs, name, _, _, _ in ok_list:
+        print(f"    ✅ [{speed}KB/s|{ttfb}ms|{segs}片] {name}")
+    
     sites = []
-    for ttfb, speed, code, name, api, stype in ok:
-        clean_name = re.sub(r'^\[.*?\]\s*', '', name)
-        sites.append({
-            "key": clean_name or name,
-            "name": f"[{ttfb}ms|{speed}KB/s] {clean_name or name}",
-            "type": stype,
-            "api": api,
-            "searchable": 1,
-            "quickSearch": 1,
-            "filterable": 0
-        })
-
-    result = {"spider": "", "sites": sites, "lives": all_lives, "parses": all_parses}
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(result, f, ensure_ascii=False, indent=2)
-
-    # 源URL列表
-    with open(os.path.join(WORK_DIR, "sources.txt"), "w") as f:
-        f.write(f"# 更新: {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
-        for name, url, latency, _ in source_configs:
-            f.write(f"[{latency}ms] {name}\n{url}\n\n")
-
+    for _, ttfb, speed, segs, name, api, st, _ in ok_list:
+        clean = re.sub(r'^\[.*?\]\s*', '', name)
+        stable = "稳" if speed > 500 else "中" if speed > 100 else "慢"
+        sites.append({"key":clean, "name":f"[{speed}KB/s|{ttfb}ms|{stable}] {clean}",
+                      "type":st, "api":api, "searchable":1, "quickSearch":1, "filterable":0})
+    
+    result = {"spider":"", "sites":sites, "lives":all_lives, "parses":all_parses}
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f: json.dump(result, f, ensure_ascii=False, indent=2)
+    with open(os.path.join(WORK_DIR,"sources.txt"), "w") as f:
+        f.write(f"# {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+        for name,url,lat,_ in configs: f.write(f"[{lat}ms] {name}\n{url}\n\n")
     print(f"\n  sites:{len(sites)} lives:{len(all_lives)} parses:{len(all_parses)}")
     print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 完成!")
     return 0
 
-if __name__ == "__main__":
-    sys.exit(main())
+if __name__ == "__main__": sys.exit(main())

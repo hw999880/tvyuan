@@ -2,26 +2,8 @@
   "spider": "",
   "sites": [
     {
-      "key": "尤酷",
-      "name": "[652ms|0KB/s] 尤酷",
-      "type": 1,
-      "api": "https://api.ukuapi.com/api.php/provide/vod",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 0
-    },
-    {
-      "key": "极速",
-      "name": "[777ms|0KB/s] 极速",
-      "type": 1,
-      "api": "https://jszyapi.com/api.php/provide/vod",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 0
-    },
-    {
       "key": "率率",
-      "name": "[934ms|0KB/s] 率率",
+      "name": "[2092KB/s|1700ms|稳] 率率",
       "type": 1,
       "api": "https://suoniapi.com/api.php/provide/vod",
       "searchable": 1,
@@ -30,9 +12,27 @@
     },
     {
       "key": "索尼┃采集",
-      "name": "[1071ms|0KB/s] 索尼┃采集",
+      "name": "[1730KB/s|3513ms|稳] 索尼┃采集",
       "type": 1,
       "api": "https://suoniapi.com/api.php/provide/vod",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
+    },
+    {
+      "key": "极速",
+      "name": "[909KB/s|1700ms|稳] 极速",
+      "type": 1,
+      "api": "https://jszyapi.com/api.php/provide/vod",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
+    },
+    {
+      "key": "尤酷",
+      "name": "[572KB/s|1555ms|稳] 尤酷",
+      "type": 1,
+      "api": "https://api.ukuapi.com/api.php/provide/vod",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 0
