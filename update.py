@@ -37,6 +37,36 @@ def resolve_spider(spider, source_url):
     return spider
 
 def main():
+    # 5. 单仓（仅采集站，播放测速排序）
+    print(f"  测采集站播放速度...")
+    collect_apis = {}
+    for s in all_sites:
+        if s.get("type") in (0,1) and s.get("api","").startswith("http"):
+            api = s["api"]
+            if api not in collect_apis: collect_apis[api] = s.get("type",1)
+    
+    collect_ok = []
+    for api, st in collect_apis.items():
+        from urllib.parse import urljoin as _urljoin, urlparse as _urlparse
+        base = re.sub(r'[?&]ac=list.*', '', api.rstrip("/"))
+        body = curl(build_url(base, "ac=list"), 10) if False else curl(base + ("&" if "?" in base else "?") + "ac=list", 10)
+        # 简单测HTTP延迟即可
+        try:
+            t0=time.time()
+            r = subprocess.run(["curl","-s","-o","/dev/null","-w","%{http_code}","--connect-timeout","5","--max-time","10",base],capture_output=True,timeout=15)
+            lat = int((time.time()-t0)*1000) if r.stdout.decode().strip().startswith(("2","3")) else 99999
+        except: lat=99999
+        if lat < 99999:
+            for s in all_sites:
+                if s.get("api") == api:
+                    collect_ok.append({"key":s.get("key",""),"name":s.get("name",""),"type":st,"api":api,"searchable":1,"quickSearch":1,"filterable":0})
+                    break
+    
+    collect_json = {"spider":"","sites":collect_ok,"lives":[],"parses":[]}
+    with open(os.path.join(WORK_DIR, "tvbox_collect.json"), "w", encoding="utf-8") as f:
+        json.dump(collect_json, f, ensure_ascii=False, indent=2)
+    print(f"  单仓: {len(collect_ok)} 个采集站")
+    
     print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 开始更新...")
 
     # 1. 获取源列表
@@ -122,6 +152,36 @@ def main():
 
     print(f"  sites: {len(all_sites)} (采集:{types.get(0,0)+types.get(1,0)} 爬虫:{types.get(3,0)})")
     print(f"  lives: {len(all_lives)} parses: {len(all_parses)}")
+    # 5. 单仓（仅采集站，播放测速排序）
+    print(f"  测采集站播放速度...")
+    collect_apis = {}
+    for s in all_sites:
+        if s.get("type") in (0,1) and s.get("api","").startswith("http"):
+            api = s["api"]
+            if api not in collect_apis: collect_apis[api] = s.get("type",1)
+    
+    collect_ok = []
+    for api, st in collect_apis.items():
+        from urllib.parse import urljoin as _urljoin, urlparse as _urlparse
+        base = re.sub(r'[?&]ac=list.*', '', api.rstrip("/"))
+        body = curl(build_url(base, "ac=list"), 10) if False else curl(base + ("&" if "?" in base else "?") + "ac=list", 10)
+        # 简单测HTTP延迟即可
+        try:
+            t0=time.time()
+            r = subprocess.run(["curl","-s","-o","/dev/null","-w","%{http_code}","--connect-timeout","5","--max-time","10",base],capture_output=True,timeout=15)
+            lat = int((time.time()-t0)*1000) if r.stdout.decode().strip().startswith(("2","3")) else 99999
+        except: lat=99999
+        if lat < 99999:
+            for s in all_sites:
+                if s.get("api") == api:
+                    collect_ok.append({"key":s.get("key",""),"name":s.get("name",""),"type":st,"api":api,"searchable":1,"quickSearch":1,"filterable":0})
+                    break
+    
+    collect_json = {"spider":"","sites":collect_ok,"lives":[],"parses":[]}
+    with open(os.path.join(WORK_DIR, "tvbox_collect.json"), "w", encoding="utf-8") as f:
+        json.dump(collect_json, f, ensure_ascii=False, indent=2)
+    print(f"  单仓: {len(collect_ok)} 个采集站")
+    
     print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 完成!")
     return 0
 
