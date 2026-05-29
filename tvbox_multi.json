@@ -1,0 +1,44 @@
+{
+  "storeHouse": [
+    {
+      "sourceName": "[95ms] my interface",
+      "sourceUrl": "http://124.223.214.31:8/api.json"
+    },
+    {
+      "sourceName": "[108ms] 传说blog",
+      "sourceUrl": "https://chuanshuo.77blog.cn/tv.json"
+    },
+    {
+      "sourceName": "[153ms] 王二小",
+      "sourceUrl": "https://9280.kstore.vip/newwex.json"
+    },
+    {
+      "sourceName": "[172ms] 俊哥接口",
+      "sourceUrl": "http://home.jundie.top:81/top98.json"
+    },
+    {
+      "sourceName": "[416ms] 饭太硬",
+      "sourceUrl": "https://qist.wyfc.qzz.io/fty.json"
+    },
+    {
+      "sourceName": "[549ms] 荐片",
+      "sourceUrl": "https://tv.203511.xyz/0821.json"
+    },
+    {
+      "sourceName": "[605ms] 潇洒",
+      "sourceUrl": "https://qist.wyfc.qzz.io/xiaosa/api.json"
+    },
+    {
+      "sourceName": "[612ms] 牛二",
+      "sourceUrl": "https://9280.kstore.space/newwex.json"
+    },
+    {
+      "sourceName": "[805ms] 电视",
+      "sourceUrl": "https://raw.githubusercontent.com/qist/tvbox/master/jsm.json"
+    },
+    {
+      "sourceName": "[2821ms] xn--6orr3pi6g9uu",
+      "sourceUrl": "http://xn--6orr3pi6g9uu.top/"
+    }
+  ]
+}
