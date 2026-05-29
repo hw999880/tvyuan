@@ -1,0 +1,31 @@
+# TVBox 聚合源 - Gitee CI/CD 自动更新
+# 每小时自动运行，无需本地电脑在线
+
+triggers:
+  - cron: "0 * * * *"
+  - push:
+      branches:
+        - master
+
+jobs:
+  update:
+    name: 更新 TVBox 聚合源
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITEE_TOKEN }}
+          fetch-depth: 1
+
+      - name: 运行更新脚本
+        run: python3 update.py
+
+      - name: 提交并推送
+        run: |
+          git config user.email "bot@tvbox.local"
+          git config user.name "TVBox Bot"
+          git add -A
+          git diff --cached --quiet && echo "无变更" && exit 0
+          git commit -m "auto update: $(date '+%Y-%m-%d %H:%M:%S')"
+          git push origin HEAD:master
