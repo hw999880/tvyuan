@@ -10,7 +10,7 @@
 
 | 网络 | 地址 |
 |------|------|
-| 🇨🇳 国内 | `https://gitee.com/onm-hundred-and-eleven/tvyuan/raw/master/tvbox.json` |
+| 🇨🇳 国内 | `https://gitee.com/onm-hundred-and-eleven/tvyuan/raw/main/tvbox.json` |
 | 🌍 海外 | `https://raw.githubusercontent.com/25175/tvyuan/master/tvbox.json` |
 
 ### 🗄️ 全量版
@@ -19,7 +19,7 @@
 
 | 网络 | 地址 |
 |------|------|
-| 🇨🇳 国内 | `https://gitee.com/onm-hundred-and-eleven/tvyuan/raw/master/tvbox_full.json` |
+| 🇨🇳 国内 | `https://gitee.com/onm-hundred-and-eleven/tvyuan/raw/main/tvbox_full.json`（⚠️ Gitee 审查拦截，可能不可用） |
 | 🌍 海外 | `https://raw.githubusercontent.com/25175/tvyuan/master/tvbox_full.json` |
 
 ### 📦 多仓版
@@ -28,7 +28,7 @@
 
 | 网络 | 地址 |
 |------|------|
-| 🇨🇳 国内 | `https://gitee.com/onm-hundred-and-eleven/tvyuan/raw/master/tvbox_multi.json` |
+| 🇨🇳 国内 | `https://gitee.com/onm-hundred-and-eleven/tvyuan/raw/main/tvbox_multi.json` |
 | 🌍 海外 | `https://raw.githubusercontent.com/25175/tvyuan/master/tvbox_multi.json` |
 
 ## 客户端下载

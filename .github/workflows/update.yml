@@ -27,8 +27,13 @@ jobs:
           git diff --cached --quiet && echo "无变更" && exit 0
           git commit -m "auto update: $(date -u '+%Y-%m-%d %H:%M:%S')"
 
+          # 推送到 GitHub（全量）
           git remote set-url origin https://25175:${GH_PAT}@github.com/25175/tvyuan.git
           git push origin HEAD:master
 
-          git remote add gitee https://oauth2:${GITEE_TOKEN}@gitee.com/onm-hundred-and-eleven/tvyuan.git
-          git push gitee HEAD:master --force 2>/dev/null || echo "Gitee 推送跳过"
+          # 推送到 Gitee（tvbox_full.json 被审查拦截451，不推送）
+          git remote add gitee https://oauth2:${GITEE_TOKEN}@gitee.com/onm-hundred-and-eleven/tvyuan.git 2>/dev/null || true
+          git rm --cached tvbox_full.json
+          rm -f tvbox_full.json
+          git commit -m "gitee: 移除被拦截的全量版"
+          git push gitee HEAD:main --force 2>/dev/null || echo "Gitee 推送跳过"
