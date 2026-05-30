@@ -34,12 +34,13 @@ https://tv.cc0cd.cc.cd
 
 ### 📦 多仓版
 
-多个仓库独立保留，每个源有自己的 JAR 和站点，可切换仓库：
+多个仓库独立保留，每个源有自己的 JAR 和站点，可切换仓库（丰米/影视仓）：
 
-| 网络 | 地址 |
+| 渠道 | 地址 |
 |------|------|
-| 🇨🇳 国内 | `https://gitee.com/onm-hundred-and-eleven/tvyuan/raw/main/tvbox_multi.json` |
-| 🌍 海外 | `https://raw.githubusercontent.com/25175/tvyuan/master/tvbox_multi.json` |
+| 🔗 直链 | `https://tv.cc0cd.cc.cd/multi` |
+| 🇨🇳 Gitee | `https://gitee.com/onm-hundred-and-eleven/tvyuan/raw/main/tvbox_multi.json` |
+| 🌍 GitHub | `https://raw.githubusercontent.com/25175/tvyuan/master/tvbox_multi.json` |
 
 ## 客户端下载
 
