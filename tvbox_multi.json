@@ -1,16 +1,8 @@
 {
   "urls": [
     {
-      "name": "[82ms] cs",
-      "url": "http://tv.nxog.top/m/"
-    },
-    {
       "name": "[86ms] my interface",
       "url": "http://124.223.214.31:8/api.json"
-    },
-    {
-      "name": "[167ms] 苍蓝",
-      "url": "https://13537.kstore.vip/tvbox/test.json"
     },
     {
       "name": "[174ms] 王二小",
@@ -21,92 +13,12 @@
       "url": "http://home.jundie.top:81/top98.json"
     },
     {
-      "name": "[188ms] 牛二",
-      "url": "https://9280.kstore.space/newwex.json"
-    },
-    {
-      "name": "[219ms] 1",
-      "url": "https://700sjro44343.vicp.fun/vip/vip/tv.json"
-    },
-    {
-      "name": "[225ms] 二月红接口",
-      "url": "https://700sjro44343.vicp.fun/eggp/0211/tv.json"
-    },
-    {
-      "name": "[301ms] 少儿频道",
-      "url": "https://jihulab.com/ymz1231/xymz/-/raw/main/ymshaoer"
-    },
-    {
-      "name": "[358ms] 我",
-      "url": "https://www.kdocs.cn/l/cuyt7V1rZjiS"
-    },
-    {
-      "name": "[429ms] 欧歌免费",
-      "url": "https://tv.nxog.top/m/111.php?ou=公众号欧歌app&mz=index&jar=index&123&b=tv"
-    },
-    {
-      "name": "[1058ms] 18",
-      "url": "https://raw.githubusercontent.com/xzqcsa/ysc/837da76da2309050fa377e0e366896ea6a64e32f/xzqzy/18.json"
-    },
-    {
-      "name": "[1108ms] 荐片",
-      "url": "https://tv.203511.xyz/0821.json"
-    },
-    {
-      "name": "[1194ms] 饭太硬",
-      "url": "https://qist.wyfc.qzz.io/fty.json"
-    },
-    {
-      "name": "[1241ms] 潇洒",
+      "name": "[524ms] 潇洒",
       "url": "https://qist.wyfc.qzz.io/xiaosa/api.json"
     },
     {
-      "name": "[1263ms] 饭太硬",
-      "url": "http://fty.xxooo.cf/tv"
-    },
-    {
-      "name": "[1422ms] 电视",
-      "url": "https://raw.githubusercontent.com/qist/tvbox/master/jsm.json"
-    },
-    {
-      "name": "[1494ms] uuccc",
-      "url": "http://xn--5mqx81b535a.com/"
-    },
-    {
-      "name": "[1573ms] 看戏网",
-      "url": "https://www.gunys.com/"
-    },
-    {
-      "name": "[1618ms] 传说blog",
-      "url": "https://chuanshuo.77blog.cn/tv.json"
-    },
-    {
-      "name": "[1751ms] 王二小放牛娃",
-      "url": "http://tv.999888987.xyz"
-    },
-    {
-      "name": "[2020ms] 饭太硬",
-      "url": "http://fty.888484.xyz/tv"
-    },
-    {
-      "name": "[2053ms] 小盒子4K",
-      "url": "http://xhztv.top/4k.json"
-    },
-    {
-      "name": "[2199ms] ok",
-      "url": "https://raw.liucn.cc/box/m.json"
-    },
-    {
-      "name": "[2253ms] 新接口",
-      "url": "https://www.iyouhun.com/tv/wex"
-    },
-    {
-      "name": "[3536ms] 王二小接口",
-      "url": "http://tvbox.xn--4kq62z5rby2qupq9ub.top/"
-    },
-    {
-      "name": "[4227ms] xn--6orr3pi6g9uu",
-      "url": "http://xn--6orr3pi6g9uu.top/"
+      "name": "[612ms] 牛二",
+      "url": "https://9280.kstore.space/newwex.json"
     }
   ]
 }
