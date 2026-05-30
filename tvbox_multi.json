@@ -1,24 +1,24 @@
 {
-  "storeHouse": [
+  "urls": [
     {
-      "sourceName": "[86ms] my interface",
-      "sourceUrl": "http://124.223.214.31:8/api.json"
+      "name": "[1] my interface",
+      "url": "http://124.223.214.31:8/api.json"
     },
     {
-      "sourceName": "[174ms] 王二小",
-      "sourceUrl": "https://9280.kstore.vip/newwex.json"
+      "name": "[2] 王二小",
+      "url": "https://9280.kstore.vip/newwex.json"
     },
     {
-      "sourceName": "[175ms] 俊哥接口",
-      "sourceUrl": "http://home.jundie.top:81/top98.json"
+      "name": "[3] 俊哥接口",
+      "url": "http://home.jundie.top:81/top98.json"
     },
     {
-      "sourceName": "[524ms] 潇洒",
-      "sourceUrl": "https://qist.wyfc.qzz.io/xiaosa/api.json"
+      "name": "[4] 潇洒",
+      "url": "https://qist.wyfc.qzz.io/xiaosa/api.json"
     },
     {
-      "sourceName": "[612ms] 牛二",
-      "sourceUrl": "https://9280.kstore.space/newwex.json"
+      "name": "[5] 牛二",
+      "url": "https://9280.kstore.space/newwex.json"
     }
   ]
 }
