@@ -4,9 +4,17 @@
 
 ## 使用方法
 
-### 📺 简洁版（推荐）
+### 📺 一键配置（推荐）
 
-仅采集站（固定前10个最快），不依赖 JAR，**真实播放测速排序**（m3u8→分片下载），直接能用：
+直接复制地址到 TVBox/影视仓/丰米 客户端，采集站播放测速排序在前，开箱即用：
+
+```
+https://tv.cc0cd.cc.cd
+```
+
+### 📺 简洁版
+
+仅采集站（固定前10个最快），不依赖 JAR，**真实播放测速排序**（m3u8→分片下载）：
 
 | 网络 | 地址 |
 |------|------|
@@ -17,10 +25,11 @@
 
 全部站点合并，采集站播放测速排名在前，爬虫站延迟排名在后，带 spider JAR：
 
-| 网络 | 地址 |
+| 渠道 | 地址 |
 |------|------|
-| 🇨🇳 国内 | `https://gitee.com/onm-hundred-and-eleven/tvyuan/raw/main/tvbox_full.json`（⚠️ Gitee 审查拦截，可能不可用） |
-| 🌍 海外 | `https://raw.githubusercontent.com/25175/tvyuan/master/tvbox_full.json` |
+| 🔗 直链 | `https://tv.cc0cd.cc.cd` |
+| 🌍 GitHub | `https://raw.githubusercontent.com/25175/tvyuan/master/tvbox_full.json` |
+| 🇨🇳 Gitee | `https://gitee.com/onm-hundred-and-eleven/tvyuan/raw/main/tvbox_full.json`（⚠️ Gitee 审查拦截，可能不可用） |
 
 ### 📦 多仓版
 
@@ -48,7 +57,8 @@
 
 - 数据来源：[tvbox.clbug.com](https://tvbox.clbug.com/user.php)
 - 每小时自动更新：测速 → 抓取 → 合并 → 推送
-- 简洁版播放测速流程：获取视频 → 下载 m3u8 主列表 → 解析媒体列表 → 下载 ts 分片 → 计算持续速度
+- 播放测速流程：获取视频 → 下载 m3u8 主列表 → 解析媒体列表 → 下载 ts 分片 → 计算持续速度
+- GitHub Actions 环境通过 Cloudflare Worker + Tunnel 回国内代理测速，突破 IP 封锁
 - 不可用源自动清洗，恢复后自动加回
 
 ## 更新频率

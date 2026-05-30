@@ -15,7 +15,7 @@ jobs:
 
       - name: 运行更新脚本
         env:
-          CF_PROXY: https://tvbox-proxy.ass2931.workers.dev
+          CF_PROXY: https://tv.cc0cd.cc.cd
         run: python3 update.py
 
       - name: 推送更新
