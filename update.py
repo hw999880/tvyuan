@@ -61,7 +61,7 @@ def build_url(base, params):
 def test_play_speed(api, stype):
     """真实播放测速：m3u8主列表→媒体列表→ts分片下载"""
     base = re.sub(r'[?&]ac=list.*', '', api.rstrip("/"))
-    body = curl(build_url(base, "ac=list"), 10)
+    body = curl(build_url(base, "ac=list"), 15)
     if not body or len(body) < 50: return 0, 0, "列表失败"
     vid = None
     if stype == 0:
@@ -73,7 +73,7 @@ def test_play_speed(api, stype):
             vid = str(j["list"][0]["vod_id"]) if j.get("list") else None
         except: return 0, 0, "解析失败"
     if not vid: return 0, 0, "无ID"
-    detail = curl(build_url(base, f"ac=detail&ids={vid}"), 10)
+    detail = curl(build_url(base, f"ac=detail&ids={vid}"), 15)
     play = None
     if stype == 0:
         u = extract_m3u8(detail); play = u[0] if u else None
@@ -85,7 +85,7 @@ def test_play_speed(api, stype):
         except: return 0, 0, "详情失败"
     if not play: return 0, 0, "无播放URL"
     t0 = time.time()
-    master = curl(play, 10)
+    master = curl(play, 15)
     ttfb = int((time.time() - t0) * 1000)
     if not master: return ttfb, 0, "主列表空"
     media_url = None
@@ -99,7 +99,7 @@ def test_play_speed(api, stype):
     elif "#EXTINF" in master: media_url = play
     if not media_url: return ttfb, 0, "无媒体列表"
     t1 = time.time()
-    media = curl(media_url, 10)
+    media = curl(media_url, 15)
     mms = int((time.time() - t1) * 1000)
     if "#EXTINF" not in media: return ttfb + mms, 0, "无分片"
     segs = get_segments(media, media_url)
@@ -108,7 +108,7 @@ def test_play_speed(api, stype):
     for s in segs[:3]:
         r = subprocess.run(["curl", "-s", "-o", "/dev/null",
                            "-w", "%{http_code},%{size_download},%{time_total}",
-                           "--connect-timeout", "5", "--max-time", "15", s],
+                           "--connect-timeout", "8", "--max-time", "20", s],
                           capture_output=True, timeout=20)
         parts = r.stdout.decode().strip().split(",")
         code = parts[0] if parts else "000"
@@ -188,13 +188,16 @@ def main():
             if u and u not in parse_keys: parse_keys.add(u); all_parses.append(p)
     print()
 
-    # ── 4. 采集站播放测速 ──
+    # ── 4. 采集站播放测速（每站最多重试2次）──
     print(f"  播放测速: 测 {len(collect_sources)} 个采集站...")
     collect_results = []
     for api, (src_name, stype) in collect_sources.items():
-        ttfb, speed, status = test_play_speed(api, stype)
-        if status == "OK":
-            collect_results.append((ttfb, speed, api, stype))
+        ok = False
+        for attempt in range(3):
+            ttfb, speed, st = test_play_speed(api, stype)
+            if st == "OK":
+                collect_results.append((ttfb, speed, api, stype)); ok = True; break
+            if attempt < 2: time.sleep(2)
         sys.stdout.write(f"\r  {len(collect_results)} 可用/{len(collect_sources)} 测试"); sys.stdout.flush()
     print()
 
