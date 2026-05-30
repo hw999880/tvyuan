@@ -7,14 +7,17 @@ TVBox 聚合源自动更新
   3. tvbox_multi.json → 多仓版（27个独立仓库）
 """
 import json, sys, re, subprocess, os, time
+import urllib.parse
 from urllib.parse import urljoin, urlparse
 
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
+CF_PROXY = os.environ.get("CF_PROXY", "")  # Cloudflare Worker 代理地址
 
-def curl(url, timeout=10):
+def curl(url, timeout=10, via_proxy=False):
+    actual_url = f"{CF_PROXY}?u={urllib.parse.quote(url, safe='')}" if (via_proxy and CF_PROXY) else url
     try:
         r = subprocess.run(["curl","-s","-L","--connect-timeout",str(timeout),
-                           "--max-time",str(timeout*2),"-A","Mozilla/5.0",url],
+                           "--max-time",str(timeout*2),"-A","Mozilla/5.0",actual_url],
                           capture_output=True, timeout=timeout*2+5)
         return r.stdout.decode("utf-8", errors="replace")
     except: return ""
@@ -58,10 +61,10 @@ def get_segments(media, media_url):
 def build_url(base, params):
     return base.rstrip("/") + ("&" if "?" in base else "?") + params
 
-def test_play_speed(api, stype):
+def test_play_speed(api, stype, use_proxy=False):
     """真实播放测速：m3u8主列表→媒体列表→ts分片下载"""
     base = re.sub(r'[?&]ac=list.*', '', api.rstrip("/"))
-    body = curl(build_url(base, "ac=list"), 15)
+    body = curl(build_url(base, "ac=list"), 15, via_proxy=use_proxy)
     if not body or len(body) < 50: return 0, 0, "列表失败"
     vid = None
     if stype == 0:
@@ -73,7 +76,7 @@ def test_play_speed(api, stype):
             vid = str(j["list"][0]["vod_id"]) if j.get("list") else None
         except: return 0, 0, "解析失败"
     if not vid: return 0, 0, "无ID"
-    detail = curl(build_url(base, f"ac=detail&ids={vid}"), 15)
+    detail = curl(build_url(base, f"ac=detail&ids={vid}"), 15, via_proxy=use_proxy)
     play = None
     if stype == 0:
         u = extract_m3u8(detail); play = u[0] if u else None
@@ -85,7 +88,7 @@ def test_play_speed(api, stype):
         except: return 0, 0, "详情失败"
     if not play: return 0, 0, "无播放URL"
     t0 = time.time()
-    master = curl(play, 15)
+    master = curl(play, 15, via_proxy=use_proxy)
     ttfb = int((time.time() - t0) * 1000)
     if not master: return ttfb, 0, "主列表空"
     media_url = None
@@ -99,7 +102,7 @@ def test_play_speed(api, stype):
     elif "#EXTINF" in master: media_url = play
     if not media_url: return ttfb, 0, "无媒体列表"
     t1 = time.time()
-    media = curl(media_url, 15)
+    media = curl(media_url, 15, via_proxy=use_proxy)
     mms = int((time.time() - t1) * 1000)
     if "#EXTINF" not in media: return ttfb + mms, 0, "无分片"
     segs = get_segments(media, media_url)
@@ -188,15 +191,15 @@ def main():
             if u and u not in parse_keys: parse_keys.add(u); all_parses.append(p)
     print()
 
-    # ── 4. 采集站播放测速（每站最多重试2次）──
+    # ── 4. 采集站播放测速（直连2次 + CF代理1次）──
     print(f"  播放测速: 测 {len(collect_sources)} 个采集站...")
     collect_results = []
     for api, (src_name, stype) in collect_sources.items():
-        ok = False
         for attempt in range(3):
-            ttfb, speed, st = test_play_speed(api, stype)
+            use_proxy = (attempt == 2 and CF_PROXY)
+            ttfb, speed, st = test_play_speed(api, stype, use_proxy=use_proxy)
             if st == "OK":
-                collect_results.append((ttfb, speed, api, stype)); ok = True; break
+                collect_results.append((ttfb, speed, api, stype)); break
             if attempt < 2: time.sleep(2)
         sys.stdout.write(f"\r  {len(collect_results)} 可用/{len(collect_sources)} 测试"); sys.stdout.flush()
     print()

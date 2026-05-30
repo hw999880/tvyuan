@@ -14,6 +14,8 @@ jobs:
           token: ${{ secrets.GH_PAT }}
 
       - name: 运行更新脚本
+        env:
+          CF_PROXY: https://tvbox-proxy.ass2931.workers.dev
         run: python3 update.py
 
       - name: 推送更新
