@@ -1,0 +1,22 @@
+[
+  {
+    "name": "[86ms] my interface",
+    "url": "http://124.223.214.31:8/api.json"
+  },
+  {
+    "name": "[174ms] 王二小",
+    "url": "https://9280.kstore.vip/newwex.json"
+  },
+  {
+    "name": "[175ms] 俊哥接口",
+    "url": "http://home.jundie.top:81/top98.json"
+  },
+  {
+    "name": "[524ms] 潇洒",
+    "url": "https://qist.wyfc.qzz.io/xiaosa/api.json"
+  },
+  {
+    "name": "[612ms] 牛二",
+    "url": "https://9280.kstore.space/newwex.json"
+  }
+]
