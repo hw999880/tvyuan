@@ -60,6 +60,7 @@ https://tv.cc0cd.cc.cd
 - 数据来源：[tvbox.clbug.com](https://tvbox.clbug.com/user.php)
 - 每小时自动更新：测速 → 抓取 → 合并 → 推送
 - 播放测速流程：获取视频 → 下载 m3u8 主列表 → 解析媒体列表 → 下载 ts 分片 → 计算持续速度
+- **置顶规则**：索尼、360 固定排在前两位，其他按播放速度/延迟排序
 - GitHub Actions 通过 CF Tunnel + 本地代理（国内IP）测速，突破采集站 IP 封锁
 - 不可用源自动清洗，恢复后自动加回
 

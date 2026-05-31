@@ -208,6 +208,20 @@ def main():
     # 按持续速度排序（速度快→慢，同速按首帧快）
     collect_results.sort(key=lambda x: (-x[1], x[0]))
 
+    # 置顶指定采集站：索尼第一、360第二
+    PINNED_APIS = ["suoniapi.com", "360zy.com"]
+    pinned = [[] for _ in PINNED_APIS]
+    rest = []
+    for item in collect_results:
+        api = item[2]
+        placed = False
+        for i, kw in enumerate(PINNED_APIS):
+            if kw in api:
+                pinned[i].append(item); placed = True; break
+        if not placed:
+            rest.append(item)
+    collect_results = [x for group in pinned for x in group] + rest
+
     # 标记采集站的播放速度，用于全量版排序
     speed_map = {api: (ttfb, speed) for ttfb, speed, api, _ in collect_results}
     for s in all_sites:
@@ -223,6 +237,22 @@ def main():
             return (0, -s.get("_speed", 0), s.get("_speed_ttfb", 99999), s.get("_lat", 99999))
         return (1, 0, 0, s.get("_lat", 99999))
     all_sites.sort(key=full_sort_key)
+
+    # 全量版置顶：索尼、360 移到采集站最前面
+    pinned_sites = [[] for _ in PINNED_APIS]
+    other_collect = []
+    other_sites = []
+    for s in all_sites:
+        if s.get("type") not in (0, 1):
+            other_sites.append(s); continue
+        api = s.get("api", "")
+        placed = False
+        for i, kw in enumerate(PINNED_APIS):
+            if kw in api:
+                pinned_sites[i].append(s); placed = True; break
+        if not placed:
+            other_collect.append(s)
+    all_sites = [x for group in pinned_sites for x in group] + other_collect + other_sites
     for s in all_sites:
         s.pop("_lat", None)
         s.pop("_speed", None)
@@ -238,8 +268,16 @@ def main():
     print(f"  全量版: {len(all_sites)} 站点 (采集:{types.get(0,0)+types.get(1,0)} 爬虫:{types.get(3,0)})")
 
     # ── 6. 生成 tvbox_multi.json（多仓版）──
+    # 多仓版置顶：包含索尼/360的仓库排前面
+    pinned_repos = set()
+    for api_key in collect_sources:
+        for kw in PINNED_APIS:
+            if kw in api_key:
+                pinned_repos.add(collect_sources[api_key][0])
+    pinned_avail = [(n, u, l) for n, u, l in available if n in pinned_repos]
+    other_avail = [(n, u, l) for n, u, l in available if n not in pinned_repos]
     multi = {"storeHouse": [{"sourceName": f"[{lat}ms] {name}", "sourceUrl": url}
-                            for name, url, lat in available]}
+                            for name, url, lat in pinned_avail + other_avail]}
     with open(os.path.join(WORK_DIR, "tvbox_multi.json"), "w", encoding="utf-8") as f:
         json.dump(multi, f, ensure_ascii=False, indent=2)
     print(f"  多仓版: {len(available)} 个仓库")
