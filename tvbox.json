@@ -2,17 +2,17 @@
   "spider": "",
   "sites": [
     {
-      "key": "影视 | 索尼[直连]",
-      "name": "[432KB/s|3815ms|中] 影视 | 索尼[直连]",
-      "type": 0,
-      "api": "https://suoniapi.com/api.php/provide/vod/at/xml/",
+      "key": "影视 | 率率[直连]",
+      "name": "[258KB/s|4610ms|中] 影视 | 率率[直连]",
+      "type": 1,
+      "api": "https://suoniapi.com/api.php/provide/vod/?ac=list",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 0
     },
     {
       "key": "🦚360┃采集",
-      "name": "[1057KB/s|787ms|稳] 🦚360┃采集",
+      "name": "[2424KB/s|463ms|稳] 🦚360┃采集",
       "type": 1,
       "api": "https://360zy.com/api.php/provide/vod?",
       "searchable": 1,
@@ -20,26 +20,8 @@
       "filterable": 0
     },
     {
-      "key": "豪华┃采三",
-      "name": "[1705KB/s|400ms|稳] 豪华┃采三",
-      "type": 1,
-      "api": "https://hhzyapi.com/api.php/provide/vod",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 0
-    },
-    {
-      "key": "新浪┃采八",
-      "name": "[620KB/s|389ms|稳] 新浪┃采八",
-      "type": 1,
-      "api": "http://api.xinlangapi.com/xinlangapi.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 0
-    },
-    {
       "key": "金鹰┃采一",
-      "name": "[538KB/s|477ms|稳] 金鹰┃采一",
+      "name": "[2697KB/s|591ms|稳] 金鹰┃采一",
       "type": 1,
       "api": "https://jyzyapi.com/provide/vod/",
       "searchable": 1,
@@ -47,17 +29,8 @@
       "filterable": 0
     },
     {
-      "key": "茅台┃采四",
-      "name": "[390KB/s|1990ms|中] 茅台┃采四",
-      "type": 1,
-      "api": "https://caiji.maotaizy.cc/api.php/provide/vod/at/josn/",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 0
-    },
-    {
       "key": "光速┃采十",
-      "name": "[196KB/s|453ms|中] 光速┃采十",
+      "name": "[1767KB/s|432ms|稳] 光速┃采十",
       "type": 1,
       "api": "https://api.guangsuapi.com/api.php/provide/vod/",
       "searchable": 1,
@@ -65,10 +38,37 @@
       "filterable": 0
     },
     {
+      "key": "豪华┃采三",
+      "name": "[483KB/s|1974ms|中] 豪华┃采三",
+      "type": 1,
+      "api": "https://hhzyapi.com/api.php/provide/vod",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
+    },
+    {
       "key": "影视 | 极速[直连]",
-      "name": "[72KB/s|3928ms|慢] 影视 | 极速[直连]",
+      "name": "[289KB/s|3298ms|中] 影视 | 极速[直连]",
       "type": 1,
       "api": "https://jszyapi.com/api.php/provide/vod/?ac=list",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
+    },
+    {
+      "key": "新浪┃采八",
+      "name": "[207KB/s|1596ms|中] 新浪┃采八",
+      "type": 1,
+      "api": "http://api.xinlangapi.com/xinlangapi.php/provide/vod/",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
+    },
+    {
+      "key": "影视 | 尤酷[直连]",
+      "name": "[107KB/s|3233ms|中] 影视 | 尤酷[直连]",
+      "type": 1,
+      "api": "https://api.ukuapi.com/api.php/provide/vod/?ac=list",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 0
