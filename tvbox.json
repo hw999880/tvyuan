@@ -3,7 +3,7 @@
   "sites": [
     {
       "key": "影视 | 索尼[直连]",
-      "name": "[204KB/s|4416ms|中] 影视 | 索尼[直连]",
+      "name": "[206KB/s|3719ms|中] 影视 | 索尼[直连]",
       "type": 0,
       "api": "https://suoniapi.com/api.php/provide/vod/at/xml/",
       "searchable": 1,
@@ -12,7 +12,7 @@
     },
     {
       "key": "影视 | 率率[直连]",
-      "name": "[191KB/s|4198ms|中] 影视 | 率率[直连]",
+      "name": "[190KB/s|3735ms|中] 影视 | 率率[直连]",
       "type": 1,
       "api": "https://suoniapi.com/api.php/provide/vod/?ac=list",
       "searchable": 1,
@@ -21,7 +21,7 @@
     },
     {
       "key": "🦚360┃采集",
-      "name": "[415KB/s|1692ms|中] 🦚360┃采集",
+      "name": "[471KB/s|2021ms|中] 🦚360┃采集",
       "type": 1,
       "api": "https://360zy.com/api.php/provide/vod?",
       "searchable": 1,
@@ -29,17 +29,8 @@
       "filterable": 0
     },
     {
-      "key": "新浪┃采八",
-      "name": "[1676KB/s|419ms|稳] 新浪┃采八",
-      "type": 1,
-      "api": "http://api.xinlangapi.com/xinlangapi.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 0
-    },
-    {
       "key": "速播 | 采集",
-      "name": "[1611KB/s|357ms|稳] 速播 | 采集",
+      "name": "[1739KB/s|468ms|稳] 速播 | 采集",
       "type": 1,
       "api": "https://subocaiji.com/api.php/provide/vod/",
       "searchable": 1,
@@ -47,26 +38,17 @@
       "filterable": 0
     },
     {
-      "key": "金鹰 | 采集",
-      "name": "[1079KB/s|544ms|稳] 金鹰 | 采集",
+      "key": "新浪┃采八",
+      "name": "[1620KB/s|402ms|稳] 新浪┃采八",
       "type": 1,
-      "api": "https://jyzyapi.com/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 0
-    },
-    {
-      "key": "豪华┃采三",
-      "name": "[978KB/s|370ms|稳] 豪华┃采三",
-      "type": 1,
-      "api": "https://hhzyapi.com/api.php/provide/vod",
+      "api": "http://api.xinlangapi.com/xinlangapi.php/provide/vod/",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 0
     },
     {
       "key": "光速┃采十",
-      "name": "[951KB/s|342ms|稳] 光速┃采十",
+      "name": "[1090KB/s|426ms|稳] 光速┃采十",
       "type": 1,
       "api": "https://api.guangsuapi.com/api.php/provide/vod/",
       "searchable": 1,
@@ -74,8 +56,26 @@
       "filterable": 0
     },
     {
+      "key": "豪华┃采三",
+      "name": "[1036KB/s|273ms|稳] 豪华┃采三",
+      "type": 1,
+      "api": "https://hhzyapi.com/api.php/provide/vod",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
+    },
+    {
+      "key": "金鹰 | 采集",
+      "name": "[1020KB/s|409ms|稳] 金鹰 | 采集",
+      "type": 1,
+      "api": "https://jyzyapi.com/api.php/provide/vod/",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 0
+    },
+    {
       "key": "金鹰┃采一",
-      "name": "[938KB/s|393ms|稳] 金鹰┃采一",
+      "name": "[904KB/s|428ms|稳] 金鹰┃采一",
       "type": 1,
       "api": "https://jyzyapi.com/provide/vod/",
       "searchable": 1,
@@ -83,10 +83,10 @@
       "filterable": 0
     },
     {
-      "key": "ikun | 采集",
-      "name": "[808KB/s|1335ms|稳] ikun | 采集",
-      "type": 1,
-      "api": "https://ikunzyapi.com/api.php/provide/vod/",
+      "key": "量子┃采七",
+      "name": "[737KB/s|642ms|稳] 量子┃采七",
+      "type": 0,
+      "api": "https://cj.lziapi.com/api.php/provide/vod/at/xml/",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 0
